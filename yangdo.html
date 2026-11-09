@@ -83,6 +83,21 @@
   footer b{font-size:15px}
   footer a{color:#fff}
   footer .note{opacity:.7;font-size:12px;margin-top:8px}
+  .fld select{font:inherit;font-size:16px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);width:100%}
+  .fld .amt{font-size:12.5px;color:var(--muted);font-weight:400;min-height:1em}
+  .fld small{font-size:12.5px;color:var(--muted);font-weight:400}
+  .opt.off{opacity:.45}
+  .res{margin-top:14px}
+  .res table{font-size:14px}
+  .res td.num{text-align:right;white-space:nowrap;font-weight:700;color:var(--ink)}
+  .res tr.total td{font-weight:800;color:var(--navy);font-size:16px;border-top:2px solid var(--navy)}
+  .res tr.sub td{color:var(--muted);font-weight:400;font-size:13px}
+  .res .big{background:var(--navy);color:#fff;border-radius:12px;padding:14px 16px;margin-bottom:10px}
+  .res .big small{display:block;opacity:.8;font-size:13px}
+  .res .big b{font-size:24px;font-weight:900}
+  .res .big.free{background:var(--ok)}
+  .calc-note{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.6}
+  .tblwrap{overflow-x:auto}
   @media print{
     *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
     body{background:#fff}
@@ -231,6 +246,45 @@
       <p class="hint" style="margin-top:10px">애매한 영수증도 버리지 마시고 모두 보내 주세요. 인정 여부는 세무사가 검토합니다.</p>
     </section>
 
+    <section id="ycalc">
+      <h2>양도소득세 모의계산기</h2>
+      <p class="hint">금액과 날짜를 입력하면 예상 세액을 바로 계산합니다. 대략적인 참고용 계산입니다.</p>
+      <div class="calc">
+        <label class="fld">무엇을 파시나요
+          <select id="yType">
+            <option value="house">주택</option>
+            <option value="land">토지·건물·상가</option>
+            <option value="presale">분양권</option>
+          </select>
+        </label>
+        <label class="fld">산 날 (취득일)
+          <input type="date" id="yAcqDate">
+        </label>
+        <label class="fld">판 날 (양도일·잔금일)
+          <input type="date" id="ySellDate">
+        </label>
+        <label class="fld">판 가격 (양도가액, 원)
+          <input type="text" inputmode="numeric" id="ySell" placeholder="예: 500,000,000">
+          <span class="amt" data-for="ySell"></span>
+        </label>
+        <label class="fld">산 가격 (취득가액, 원)
+          <input type="text" inputmode="numeric" id="yAcq" placeholder="예: 300,000,000">
+          <span class="amt" data-for="yAcq"></span>
+        </label>
+        <label class="fld">필요경비 합계 (원)
+          <small>취득세·법무사비·중개수수료·샷시·발코니 확장 등</small>
+          <input type="text" inputmode="numeric" id="yExp" placeholder="예: 15,000,000">
+          <span class="amt" data-for="yExp"></span>
+        </label>
+        <label class="opt" id="y1hWrap"><input type="checkbox" id="y1h"> 1세대 1주택 비과세 요건을 갖췄습니다 (2년 이상 보유 등)</label>
+        <label class="fld" id="yLiveWrap">그 집에서 실제 거주한 기간 (년)
+          <input type="number" inputmode="numeric" id="yLive" min="0" max="50" placeholder="예: 5">
+        </label>
+      </div>
+      <div class="res" id="yRes"></div>
+      <p class="calc-note">· 지방소득세(10%)를 포함한 금액입니다. 기본공제 250만원은 올해 다른 양도가 없다고 보고 적용했습니다.<br>· 다주택 중과, 비사업용 토지, 자경농지 등 감면, 일시적 2주택·상속주택 특례, 조정대상지역 거주요건은 반영되지 않습니다.<br>· 정확한 세액은 서류 검토 후 담당 세무사가 계산해 드립니다.</p>
+    </section>
+
     <section>
       <h2>서류 보내는 방법</h2>
       <div class="send">
@@ -338,6 +392,133 @@
   });
 
   applyGroups();
+})();
+</script>
+<script>
+// ---- 공통: 금액 입력·표시 ----
+function wonVal(el){ return +((el.value || "").replace(/[^0-9]/g, "")) || 0; }
+function comma(n){ return Math.round(n).toLocaleString("ko-KR"); }
+function hanWon(n){
+  n = Math.round(n); if (!n) return "";
+  var eok = Math.floor(n / 100000000), man = Math.floor((n % 100000000) / 10000), won = n % 10000, s = [];
+  if (eok) s.push(eok.toLocaleString("ko-KR") + "억");
+  if (man) s.push(man.toLocaleString("ko-KR") + "만");
+  if (won) s.push(won.toLocaleString("ko-KR"));
+  return s.join(" ") + "원";
+}
+function bindMoney(el, onChange){
+  var hint = document.querySelector(".amt[data-for='" + el.id + "']");
+  function fmtIt(){
+    var v = wonVal(el);
+    el.value = v ? comma(v) : "";
+    if (hint) hint.textContent = hanWon(v);
+    onChange();
+  }
+  el.addEventListener("input", fmtIt);
+  fmtIt.silent = true;
+  var v0 = wonVal(el); el.value = v0 ? comma(v0) : ""; if (hint) hint.textContent = hanWon(v0);
+}
+// 누진세율 계산: brackets = [[상한, 세율, 누진공제], ...]
+function progTax(base, br){
+  for (var i = 0; i < br.length; i++) if (base <= br[i][0]) return base * br[i][1] - br[i][2];
+  return 0;
+}
+function rowsHtml(rows){
+  return "<div class='tblwrap'><table><tbody>" + rows.map(function(r){
+    return "<tr class='" + (r[2] || "") + "'><td>" + r[0] + "</td><td class='num'>" + r[1] + "</td></tr>";
+  }).join("") + "</tbody></table></div>";
+}
+
+// ---- 양도소득세 모의계산 (소득세법 §55·§89·§95·§103·§104) ----
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var BASIC = [[14e6,.06,0],[5e7,.15,126e4],[8.8e7,.24,576e4],[1.5e8,.35,1544e4],[3e8,.38,1994e4],[5e8,.40,2594e4],[1e9,.42,3594e4],[Infinity,.45,6594e4]];
+  var KEY = "insung-yangdo-calc-v1";
+  var ids = ["yType","yAcqDate","ySellDate","ySell","yAcq","yExp","y1h","yLive"];
+  try { var s = JSON.parse(localStorage.getItem(KEY) || "{}");
+    ids.forEach(function(i){ if (s[i] !== undefined) { if ($(i).type === "checkbox") $(i).checked = s[i]; else $(i).value = s[i]; } });
+  } catch(e) {}
+  // 기한 계산에 넣은 양도일을 기본값으로
+  if (!$("ySellDate").value && $("sellDate") && $("sellDate").value) $("ySellDate").value = $("sellDate").value;
+  function save(){ var o = {}; ids.forEach(function(i){ o[i] = $(i).type === "checkbox" ? $(i).checked : $(i).value; }); try { localStorage.setItem(KEY, JSON.stringify(o)); } catch(e) {} }
+  function parse(v){ if (!v) return null; var p = v.split("-"); return new Date(+p[0], +p[1]-1, +p[2]); }
+  function fullYears(a, b){
+    var y = b.getFullYear() - a.getFullYear();
+    var ann = new Date(a.getFullYear() + y, a.getMonth(), a.getDate());
+    if (b < ann) y--;
+    return Math.max(0, y);
+  }
+
+  function calc(){
+    save();
+    var type = $("yType").value, isHouse = type === "house";
+    $("y1hWrap").style.display = isHouse ? "" : "none";
+    $("yLiveWrap").style.display = isHouse && $("y1h").checked ? "" : "none";
+    var out = $("yRes");
+    var acqD = parse($("yAcqDate").value), sellD = parse($("ySellDate").value);
+    var sell = wonVal($("ySell")), acq = wonVal($("yAcq")), exp = wonVal($("yExp"));
+    if (!acqD || !sellD || !sell) { out.innerHTML = "<p class='hint'>산 날, 판 날, 판 가격을 입력하시면 계산 결과가 나옵니다.</p>"; return; }
+    if (sellD <= acqD) { out.innerHTML = "<p class='hint'>판 날이 산 날보다 뒤여야 합니다.</p>"; return; }
+
+    var yrs = fullYears(acqD, sellD);
+    var one = isHouse && $("y1h").checked;
+    var live = one ? Math.max(0, Math.floor(+$("yLive").value || 0)) : 0;
+    var gain = sell - acq - exp;
+    var rows = [["판 가격", comma(sell) + "원"], ["(−) 산 가격", comma(acq) + "원"], ["(−) 필요경비", comma(exp) + "원"], ["양도차익", comma(gain) + "원", "total"]];
+
+    if (gain <= 0) {
+      out.innerHTML = "<div class='big free'><small>예상 양도소득세</small><b>0원</b></div><p class='hint'>양도차익이 없어 세금이 나오지 않습니다. 손해를 본 경우에도 신고는 하셔야 합니다.</p>" + rowsHtml(rows);
+      return;
+    }
+    // 1세대 1주택 비과세 / 고가주택
+    var taxGain = gain;
+    if (one) {
+      if (sell <= 12e8) {
+        out.innerHTML = "<div class='big free'><small>예상 양도소득세</small><b>비과세 예상</b></div><p class='hint'>1세대 1주택이고 판 가격이 12억원 이하라 비과세로 예상됩니다. 비과세 요건(보유·거주기간, 다른 주택 여부)은 서류로 꼭 확인해 드립니다.</p>" + rowsHtml(rows);
+        return;
+      }
+      taxGain = Math.floor(gain * (sell - 12e8) / sell);
+      rows.push(["12억원 초과분 과세 양도차익", comma(taxGain) + "원", "sub"]);
+    }
+    // 장기보유특별공제 (§95②)
+    var ltRate = 0, ltLabel = "";
+    if (type !== "presale" && yrs >= 3) {
+      if (one && live >= 2) {
+        var h = Math.min(yrs * 0.04, 0.40);
+        var l = live >= 3 ? Math.min(live * 0.04, 0.40) : 0.08;
+        ltRate = h + l; ltLabel = "보유 " + Math.round(h*100) + "% + 거주 " + Math.round(l*100) + "%";
+      } else {
+        ltRate = Math.min(yrs * 0.02, 0.30); ltLabel = "보유 " + yrs + "년 " + Math.round(ltRate*100) + "%";
+      }
+    }
+    var lt = Math.floor(taxGain * ltRate);
+    var income = taxGain - lt;
+    var base = Math.max(0, income - 250e4);
+    // 세율 (§104①)
+    var basicTax = progTax(base, BASIC), flat = 0, rateLabel;
+    if (yrs < 1) flat = (type === "land") ? 0.5 : 0.7;
+    else if (yrs < 2) flat = (type === "land") ? 0.4 : 0.6;
+    else if (type === "presale") flat = 0.6;
+    var tax;
+    if (flat) { var ft = base * flat; tax = Math.max(ft, type === "presale" ? 0 : basicTax); rateLabel = (tax === ft ? "단일세율 " + Math.round(flat*100) + "%" : "기본세율 (단일세율보다 큼)"); }
+    else { tax = basicTax; rateLabel = "기본세율 6~45%"; }
+    tax = Math.floor(tax);
+    var local = Math.floor(tax * 0.1);
+
+    rows.push(["(−) 장기보유특별공제", (lt ? comma(lt) + "원" : "해당 없음")]);
+    if (lt) rows.push([ltLabel, "", "sub"]);
+    rows.push(["양도소득금액", comma(income) + "원"]);
+    rows.push(["(−) 기본공제", comma(Math.min(250e4, income)) + "원"]);
+    rows.push(["과세표준", comma(base) + "원", "total"]);
+    rows.push(["보유기간 / 적용세율", yrs + "년 / " + rateLabel]);
+    rows.push(["양도소득세", comma(tax) + "원"]);
+    rows.push(["지방소득세 (10%)", comma(local) + "원"]);
+    rows.push(["합계", comma(tax + local) + "원", "total"]);
+    out.innerHTML = "<div class='big'><small>예상 납부세액 (지방소득세 포함)</small><b>" + comma(tax + local) + "원</b><small>" + hanWon(tax + local) + "</small></div>" + rowsHtml(rows);
+  }
+  ["ySell","yAcq","yExp"].forEach(function(i){ bindMoney($(i), calc); });
+  ["yType","yAcqDate","ySellDate","y1h","yLive"].forEach(function(i){ $(i).addEventListener("change", calc); $(i).addEventListener("input", calc); });
+  calc();
 })();
 </script>
 </body>

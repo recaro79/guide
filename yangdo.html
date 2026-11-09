@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>양도소득세 제출서류 안내 | 세무법인 인성</title>
-<meta property="og:title" content="양도소득세 제출서류 안내 | 세무법인 인성">
+<title>양도소득세 안내 | 세무법인 인성</title>
+<meta property="og:title" content="양도소득세 안내 | 세무법인 인성">
 <meta property="og:description" content="양도일을 입력하면 신고기한이 계산되고, 필요한 서류를 상황별로 확인할 수 있습니다.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://recaro79.github.io/guide/yangdo.html">
@@ -98,6 +98,15 @@
   .res .big.free{background:var(--ok)}
   .calc-note{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.6}
   .tblwrap{overflow-x:auto}
+  .links{display:grid;gap:8px}
+  .links a{display:flex;align-items:center;gap:12px;padding:14px;border:1.5px solid var(--line);border-radius:12px;text-decoration:none;color:var(--ink);background:#fff}
+  .links a:active{background:var(--navy-soft)}
+  .links .ic{font-size:22px;flex:0 0 auto}
+  .links b{display:block;color:var(--navy);font-size:15px}
+  .links small{display:block;color:var(--muted);font-size:12.5px}
+  .links .go{margin-left:auto;font-size:24px;color:var(--navy);flex:0 0 auto}
+  .navwrap{padding-top:0}
+  @media print{ .navwrap{display:none} }
   @media print{
     *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
     body{background:#fff}
@@ -110,7 +119,7 @@
 
 <header>
   <div class="firm">세무법인 인성</div>
-  <h1>양도소득세 제출서류 안내</h1>
+  <h1>양도소득세 안내</h1>
   <p>상황에 맞는 서류를 확인하시고, 준비하신 서류는 체크해 두세요.</p>
 </header>
 
@@ -294,6 +303,20 @@
       </div>
     </section>
   </div>
+</div>
+
+<div class="wrap navwrap">
+  <section>
+    <h2>다른 안내 바로가기</h2>
+    <div class="links">
+      <a href="sugim.html"><span class="ic">🤝</span><span><b>거래처 수임등록 안내</b><small>처음 기장을 맡기실 때</small></span><span class="go">›</span></a>
+      <a href="bugase.html"><span class="ic">🧾</span><span><b>부가가치세 안내</b><small>신고 일정 · 준비서류</small></span><span class="go">›</span></a>
+      <a href="jongso.html"><span class="ic">📒</span><span><b>종합소득세 안내</b><small>5월 신고 준비서류</small></span><span class="go">›</span></a>
+      <a href="beopin.html"><span class="ic">🏢</span><span><b>법인세 안내</b><small>결산 · 신고 준비서류</small></span><span class="go">›</span></a>
+      <a href="jeungyeo.html"><span class="ic">🎁</span><span><b>증여세 안내</b><small>재산을 주고받을 때</small></span><span class="go">›</span></a>
+      <a href="sangsok.html"><span class="ic">📋</span><span><b>상속세 안내</b><small>상속이 생겼을 때</small></span><span class="go">›</span></a>
+    </div>
+  </section>
 </div>
 
 <footer>

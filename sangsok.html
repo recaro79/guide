@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>상속세 제출서류 안내 | 세무법인 인성</title>
+<title>상속세 안내 | 세무법인 인성</title>
 <meta name="description" content="사망일을 입력하면 상속 관련 기한이 계산되고, 상속세 신고에 필요한 서류를 확인할 수 있습니다.">
-<meta property="og:title" content="상속세 제출서류 안내 | 세무법인 인성">
+<meta property="og:title" content="상속세 안내 | 세무법인 인성">
 <meta property="og:description" content="사망일을 입력하면 상속 관련 기한이 계산되고, 상속세 신고에 필요한 서류를 확인할 수 있습니다.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://recaro79.github.io/guide/sangsok.html">
@@ -112,6 +112,15 @@
   footer a{color:#fff}
   footer .note{opacity:.7;font-size:12px;margin-top:8px}
   @media (max-width:420px){ .steps{grid-template-columns:repeat(2,1fr)} }
+  .links{display:grid;gap:8px}
+  .links a{display:flex;align-items:center;gap:12px;padding:14px;border:1.5px solid var(--line);border-radius:12px;text-decoration:none;color:var(--ink);background:#fff}
+  .links a:active{background:var(--navy-soft)}
+  .links .ic{font-size:22px;flex:0 0 auto}
+  .links b{display:block;color:var(--navy);font-size:15px}
+  .links small{display:block;color:var(--muted);font-size:12.5px}
+  .links .go{margin-left:auto;font-size:24px;color:var(--navy);flex:0 0 auto}
+  .navwrap{padding-top:0}
+  @media print{ .navwrap{display:none} }
   @media print{
     *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
     body{background:#fff}
@@ -125,7 +134,7 @@
 
 <header>
   <div class="firm">세무법인 인성</div>
-  <h1>상속세 제출서류 안내</h1>
+  <h1>상속세 안내</h1>
   <p>상속 개시 후, 무엇부터 준비해야 할지 순서대로 안내해 드립니다.</p>
 </header>
 
@@ -407,6 +416,20 @@
       <div><span>📠</span><span><b>팩스</b><br>051-861-9995</span></div>
     </div>
     <div class="box"><b>상담 오실 때</b> — 상속인 전원의 신분증·가족관계증명서와 안심상속 원스톱서비스 조회결과를 가져오시면 첫 상담이 훨씬 빨라집니다. 서류가 아직 준비되지 않았어도 편하게 먼저 연락 주세요.</div>
+  </section>
+</div>
+
+<div class="wrap navwrap">
+  <section>
+    <h2>다른 안내 바로가기</h2>
+    <div class="links">
+      <a href="sugim.html"><span class="ic">🤝</span><span><b>거래처 수임등록 안내</b><small>처음 기장을 맡기실 때</small></span><span class="go">›</span></a>
+      <a href="bugase.html"><span class="ic">🧾</span><span><b>부가가치세 안내</b><small>신고 일정 · 준비서류</small></span><span class="go">›</span></a>
+      <a href="jongso.html"><span class="ic">📒</span><span><b>종합소득세 안내</b><small>5월 신고 준비서류</small></span><span class="go">›</span></a>
+      <a href="beopin.html"><span class="ic">🏢</span><span><b>법인세 안내</b><small>결산 · 신고 준비서류</small></span><span class="go">›</span></a>
+      <a href="yangdo.html"><span class="ic">🏠</span><span><b>양도소득세 안내</b><small>부동산을 파셨을 때</small></span><span class="go">›</span></a>
+      <a href="jeungyeo.html"><span class="ic">🎁</span><span><b>증여세 안내</b><small>재산을 주고받을 때</small></span><span class="go">›</span></a>
+    </div>
   </section>
 </div>
 
